@@ -40,6 +40,16 @@ acgraph.WRAPPER_ID_PROP_NAME_ = 'data-ac-wrapper-id';
  */
 acgraph.wrappers = {};
 
+if (goog.global['IS_ANYCHART_AMD']) {
+  acgraph.module = goog.global;
+  acgraph.window = window;
+} else {
+  acgraph.window = goog.global;
+  acgraph.window['acgraph'] = acgraph.window['acgraph'] || {};
+  acgraph.module = acgraph.window['acgraph'];
+  acgraph.module['anychart'] = acgraph.window['anychart'];  // for stage#useAnychartExporting.
+}
+
 
 /**
  * Registers wrapper to allow it to handle browser events.
@@ -163,7 +173,7 @@ acgraph.renderer_;
 acgraph.getRenderer = function() {
   if (!acgraph.renderer_) {
     if (acgraph.type_ == acgraph.StageType.VML) {
-      var vml = goog.global['acgraph']['vml'];
+      var vml = acgraph.module['acgraph']['vml'];
       if (vml) {
         acgraph.renderer_ = vml['getRenderer']();
       } else {
@@ -191,7 +201,7 @@ acgraph.getRenderer = function() {
 acgraph.create = function(opt_container, opt_width, opt_height) {
   var stage;
   if (acgraph.type_ == acgraph.StageType.VML) {
-    var vml = goog.global['acgraph']['vml'];
+    var vml = acgraph.module['acgraph']['vml'];
     if (vml) {
       stage = new vml['Stage'](opt_container, opt_width, opt_height);
     } else {
@@ -211,7 +221,7 @@ acgraph.create = function(opt_container, opt_width, opt_height) {
  * @return {acgraph.vector.Stage}
  */
 acgraph.getStage = function(id) {
-  return goog.global['acgraph'].stages[id];
+  return acgraph.module['acgraph'].stages[id];
 };
 
 
@@ -248,7 +258,7 @@ acgraph.embedCss = function(css, opt_doc) {
 //  Default font settings
 //
 //----------------------------------------------------------------------------------------------------------------------
-goog.global['acgraph'] = goog.global['acgraph'] || {};
+// goog.global['acgraph'] = goog.global['acgraph'] || {};
 
 
 /**
@@ -256,7 +266,7 @@ goog.global['acgraph'] = goog.global['acgraph'] || {};
  * @type {string}
  *
  */
-goog.global['acgraph']['fontSize'] = '10px';
+acgraph.module['acgraph']['fontSize'] = '10px';
 
 
 /**
@@ -264,7 +274,7 @@ goog.global['acgraph']['fontSize'] = '10px';
  * @type {string}
  *
  */
-goog.global['acgraph']['fontColor'] = '#000';
+acgraph.module['acgraph']['fontColor'] = '#000';
 
 
 /**
@@ -272,7 +282,7 @@ goog.global['acgraph']['fontColor'] = '#000';
  * @type {string}
  *
  */
-goog.global['acgraph']['textDirection'] = acgraph.vector.Text.Direction.LTR;
+acgraph.module['acgraph']['textDirection'] = acgraph.vector.Text.Direction.LTR;
 
 
 /**
@@ -280,7 +290,7 @@ goog.global['acgraph']['textDirection'] = acgraph.vector.Text.Direction.LTR;
  * @type {string}
  *
  */
-goog.global['acgraph']['fontFamily'] = 'Verdana';
+acgraph.module['acgraph']['fontFamily'] = 'Verdana';
 //endregion
 
 
@@ -383,7 +393,7 @@ acgraph.image = function(opt_src, opt_x, opt_y, opt_width, opt_height) {
 acgraph.text = function(opt_x, opt_y, opt_text, opt_style) {
   var text;
   if (acgraph.type_ == acgraph.StageType.VML) {
-    var vml = goog.global['acgraph']['vml'];
+    var vml = acgraph.module['acgraph']['vml'];
     if (vml) {
       text = new vml['Text'](opt_x, opt_y);
     } else {
@@ -449,7 +459,7 @@ acgraph.patternFill = function(bounds) {
  */
 acgraph.clip = function(opt_leftOrShape, opt_top, opt_width, opt_height) {
   if (acgraph.type_ == acgraph.StageType.VML) {
-    var vml = goog.global['acgraph']['vml'];
+    var vml = acgraph.module['acgraph']['vml'];
     if (vml) {
       return new vml['Clip'](null, opt_leftOrShape, opt_top, opt_width, opt_height);
     } else {
@@ -515,7 +525,7 @@ acgraph.getReference = function() {
 
   return acgraph.getReferenceValue_ = acgraph.compatibility.USE_ABSOLUTE_REFERENCES ||
       (goog.isNull(acgraph.compatibility.USE_ABSOLUTE_REFERENCES) && goog.dom.getElementsByTagNameAndClass('base').length) ?
-          goog.global.location.origin + goog.global.location.pathname + goog.global.location.search :
+        acgraph.window.location.origin + acgraph.window.location.pathname + acgraph.window.location.search :
           '';
 };
 
